@@ -4,9 +4,9 @@ from pprint import pprint
 from redis import Redis 
 
 r = Redis(
-    host= 'us1-decent-louse-30562.lambda.store',
-    port= '30562',
-    password= '42721bf7ca7f46e686c59b25a8a0fb3d'
+    host = '',
+    port = '30562',
+    password = ''
 )
 
 # Refactor into unit test
