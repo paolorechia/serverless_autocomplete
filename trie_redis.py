@@ -65,8 +65,8 @@ def test_autocomplete():
         insert_word_trie(trie, w)
     assert {} == autocomplete_trie(trie, "")
     assert {} == autocomplete_trie(trie, "a")
-    assert {"who", "what", ""} == autocomplete_trie(trie, "w")
-    assert {"who"} == autocomplete_trie(trie, "wh")
+    assert {"who", "what"} == autocomplete_trie(trie, "w")
+    assert {"who", "what"} == autocomplete_trie(trie, "wh")
     assert {"who"} == autocomplete_trie(trie, "who")
     assert {} == autocomplete_trie(trie, "whoo")
     assert {"tree", "trie", "topaz"} == autocomplete_trie(trie, "t")
@@ -77,12 +77,11 @@ def test_autocomplete():
     assert {"salad"} == autocomplete_trie(trie, "salad")
     assert {} == autocomplete_trie(trie, "salada")
     assert {"love"} == autocomplete_trie(trie, "lo")
-    assert {"topaz"} == autocomplete_trie(trie, "t")
     assert {"topaz"} == autocomplete_trie(trie, "to")
     assert {"topaz"} == autocomplete_trie(trie, "top")
     assert {"topaz"} == autocomplete_trie(trie, "topa")
     assert {"topaz"} == autocomplete_trie(trie, "topaz")
-    assert {""} == autocomplete_trie(trie, "topazo")
+    assert {} == autocomplete_trie(trie, "topazo")
 
 
 def autocomplete_trie(trie, word):
@@ -97,12 +96,21 @@ def autocomplete_trie(trie, word):
             node = node[w]
             prefix += w
         else:
-            print("Returning empty")
             return {}
 
-    
-    print("node: {}".format(node))
-    return node 
+    words = set()
+    _get_words_from_node(node, prefix=prefix, words=words)
+    return words
+
+def _get_words_from_node(node, prefix=None, words=set()):
+    for key in node.keys():
+        if key == 'end':
+            words.add(prefix)
+            continue
+        if 'end' in node[key]:
+            words.add(prefix + key)
+        else:
+            _get_words_from_node(node[key], prefix + key, words)
 
 
 def search_word_trie(trie, word):
@@ -120,8 +128,6 @@ def search_word_trie(trie, word):
     except:
         return False
 
-def autocomplete(trie, word):
-    print("autocomplete")
 
 def insert_word_trie(trie, word):
     node = trie
