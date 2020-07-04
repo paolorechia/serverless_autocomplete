@@ -34,31 +34,21 @@ export default {
         this.suggestions = this.suggestions.filter(()=>false);
     },
     fetchSuggestions: _.debounce(function() {
-      // `this` inside methods points to the Vue instance
       axios
         .get(this.api_url + this.query, { headers: {
             "X-Api-Key": this.api_key,
             "Content-Type": "application/json"
         }})
         .then(response => {
-          // JSON responses are automatically parsed.
           const parsed = JSON.parse(
               response.data.suggestions.replace(/'/g, '"')
           ).sort();
           this.suggestions = parsed;
           console.log(this.suggestions);
-        //   this.suggestions = parsed.map(
-        //       (i, s) => ({
-        //           "key": i,
-        //           "data": s
-        //       })
-        //   );
-        //   console.log(this.suggestions);
         })
         .catch(e => {
           this.errors.push(e);
         });
-      // `event` is the native DOM event
     }, 200)
   }
 };
