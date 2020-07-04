@@ -1,26 +1,20 @@
 import os
 import json
-import redis
+
+import trie_redis
 
 
 def search(event, context):
 
-    input = event["queryStringParameters"]["input"]
-    r = redis.Redis(
-        host = os.getenv("REDIS_HOST"),
-        port = os.getenv("REDIS_PORT"),
-        password = os.getenv("REDIS_PASSWORD")
-    )
+    input_ = event["queryStringParameters"]["input"]
 
-    r.set('foo','bar')
-    redis_response = r.get('foo')
-    r.set('foo2','bar2')
-    redis_response2 = r.get('foo2')
+    blob = trie_redis.retrieve_trie()
+    trie = eval(blob)
 
+    suggestions = trie_redis.autocomplete_trie(trie, input_)
     body = {
-            "message": "Redis says: {}".format(redis_response),
-    }
-
+            "suggestions": str(list(suggestions))
+    } 
     response = {
         "statusCode": 200,
         "body": json.dumps(body)

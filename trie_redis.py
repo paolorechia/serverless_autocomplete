@@ -1,15 +1,16 @@
-import pytest
+# import pytest
 
+import os
 from pprint import pprint
 from redis import Redis 
 
-r = Redis(
-    host = '',
-    port = '30562',
-    password = ''
-)
-
 # Refactor into unit test
+
+r = Redis(
+        host = os.getenv("REDIS_HOST"),
+        port = os.getenv("REDIS_PORT"),
+        password = os.getenv("REDIS_PASSWORD")
+    )
 
 
 sample_trie = {
@@ -141,5 +142,15 @@ def insert_word_trie(trie, word):
     node['end'] = True
 
 
-#r.set('foo', str(trie))
-# print(r.get('foo'))
+def build_trie(words):
+    trie = {}
+    for w in words:
+        insert_word_trie(trie, w)
+    return trie
+
+
+def persist_trie(trie):
+    r.set('trie', str(trie))
+
+def retrieve_trie():
+    return r.get('trie')
