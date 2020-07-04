@@ -21,7 +21,7 @@ export default {
   data: function() {
     return {
       query: "",
-      suggestions: ["stub"],
+      suggestions: [],
       api_key: window.localStorage.getItem("api-key"),
       api_url: "https://dev-api.paolorechia.de/autocomplete/search?input="
     };
