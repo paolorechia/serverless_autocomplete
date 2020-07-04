@@ -1,0 +1,66 @@
+service: autocomplete
+
+package:
+  exclude:
+    - node_modules/**
+    - package.json
+    - package-lock.json
+    - __pycache__
+    - duh/**
+
+plugins:
+  - serverless-python-requirements
+  - serverless-domain-manager
+  - serverless-reqvalidator-plugin
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  domains:
+    prod: api.paolorechia.de
+    staging: staging-api.paolorechia.de
+    dev: dev-api.paolorechia.de
+  pythonRequirements:
+    dockerizePip: non-linux
+  customDomain:
+    domainName: ${self:custom.domains.${self:custom.stage}}
+    basePath: 'autocomplete'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+
+provider:
+  name: aws
+  apiKeys:
+    - ${opt:stage}-autocomplete
+  runtime: python3.8
+  stage: dev
+  region: us-east-1
+  environment:
+    REDIS_HOST: ${ssm:/dev/autocomplete/host}
+    REDIS_PASSWORD: ${ssm:/dev/autocomplete/password}
+    REDIS_PORT: 30570
+
+functions:
+  autocomplete:
+    handler: handler.search
+    events:
+      - http:
+          path: search
+          method: get 
+          private: true
+          reqValidatorName: 'params'
+          request:
+            parameters:
+              querystrings:
+                input: true
+            
+
+resources:
+  Resources:
+    params:
+      Type: "AWS::ApiGateway::RequestValidator"
+      Properties:
+        Name: 'params'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: false
+        ValidateRequestParameters: true
