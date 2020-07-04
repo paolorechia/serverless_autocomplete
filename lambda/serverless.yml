@@ -53,6 +53,7 @@ functions:
             parameters:
               querystrings:
                 input: true
+          cors: true
             
 
 resources:

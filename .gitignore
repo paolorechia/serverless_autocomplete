@@ -2,4 +2,4 @@
 .serverless/
 __pycache__/*
 duh/*
-node_modules/*
+**/node_modules/**
