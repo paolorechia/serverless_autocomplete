@@ -1,15 +1,17 @@
 import os
 import json
 
+# Connect and retrieve on cold start
 import trie_redis
 
 
+blob = trie_redis.retrieve_trie()
+trie = eval(blob)
+
+# Perform only autocomplete on warm start
 def search(event, context):
 
     input_ = event["queryStringParameters"]["input"]
-
-    blob = trie_redis.retrieve_trie()
-    trie = eval(blob)
 
     suggestions = trie_redis.autocomplete_trie(trie, input_)
     body = {
