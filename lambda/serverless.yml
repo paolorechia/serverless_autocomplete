@@ -55,7 +55,9 @@ functions:
           cors: true
 
   levenshtein:
-    handler: handler.levenshtein
+    handler: handler_levenshtein.levenshtein
+    package:
+      artifact:
     events:
       - http:
           path: levenshtein
