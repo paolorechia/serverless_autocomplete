@@ -47,7 +47,6 @@ functions:
       - http:
           path: search
           method: get 
-          private: true
           reqValidatorName: 'params'
           request:
             parameters:
