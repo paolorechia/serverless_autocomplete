@@ -13,7 +13,15 @@ words = eval(blob)
 def levenshtein(event, context):
     input_ = event["queryStringParameters"]["input"]
 
-    suggestions = autocomplete(words, input_, limit=5)
+    limit = 5
+    try:
+        limit = event["queryStringParameters"]["limit"]
+    except:
+        pass
+
+    print(limit)
+
+    suggestions = autocomplete(words, input_, limit=int(limit))
     print(suggestions)
     body = {
             "suggestions": str(list(extract_suggestions(suggestions)))
