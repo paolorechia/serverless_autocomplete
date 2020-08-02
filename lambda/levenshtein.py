@@ -3,18 +3,19 @@ import pytest
 
 class DistanceMatrix:
     def __init__(self, a, b):
-        self.a = a
-        self.b = b
-        self.distance_matrix = []
+        self._a = a
+        self._b = b
+        self._distance_matrix = []
+        self._edit_distance = 0
 
     def __str__(self):
-        if not self.distance_matrix:
-            return "a: {}\nb: {}\n [Empty Distance Matrix]".format(self.a, self.b)
+        if not self._distance_matrix:
+            return "a: {}\nb: {}\n [Empty Distance Matrix]".format(self._a, self._b)
 
-        assert isinstance(self.distance_matrix, list)
+        assert isinstance(self._distance_matrix, list)
 
         header = "#  "
-        for c in self.a:
+        for c in self._a:
             header += " {}".format(c)
 
         i = 0
@@ -22,52 +23,70 @@ class DistanceMatrix:
 
         # Build first row
         result += " "
-        first_row = self.distance_matrix[0]
+        first_row = self._distance_matrix[0]
         for n in first_row:
             result += " {}".format(n)
 
         result += "\n"
 
-        other_rows = self.distance_matrix[1:]
+        other_rows = self._distance_matrix[1:]
         for row in other_rows:
-            result += self.b[i]
+            result += self._b[i]
             i += 1
             for n in row:
                 result += " {}".format(n)
             result += "\n"
         return result
 
-    def create_distance_matrix(self):
+    def _create_distance_matrix(self):
         first_row = []
         row = []
         rows = []
 
         # First Row
-        for i in range(len(self.a) + 1):
+        for i in range(len(self._a) + 1):
             first_row.append(i)
 
         # Zeros
-        for _ in range(len(self.a)):
+        for _ in range(len(self._a)):
             row.append(0)
 
         rows.append(first_row[:])
 
-        for i in range(len(self.b)):
+        for i in range(len(self._b)):
             rows.append([i + 1] + row[:])
+
+        # Update values with Levenshtein distance
+        # Algorithm: Wagner–Fischer_algorithm
+        # Source: https://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_algorithm
+
+        self._distance_matrix = rows
+
+        for i in range(len(self._b)):
+            for j in range(len(self._a)):
+                if (self._b[i] == self._a[j]):
+                    cost = 0
+                else:
+                    cost = 1
+
+                self._distance_matrix[i+1][j+1] = \
+                    min(
+                        self._distance_matrix[i][j+1] + 1,       # deletion
+                        self._distance_matrix[i+1][j] + 1,        # insertion
+                        self._distance_matrix[i][j] + cost       # substition
+                        )
         
-        self.distance_matrix = rows
 
     def edit_distance(self):
-        # Check for empty strings
-        print("TODO")
-        if len(self.a) == 0:
-            return len(self.b)
-        if len(self.b) == 0:
-            return len(self.a)
+        if len(self._a) == 0:
+            return len(self._b)
+        if len(self._b) == 0:
+            return len(self._a)
 
-        # do more stuff here stuff
-        return 0
+        self._create_distance_matrix()
+        self._edit_distance = self._distance_matrix[-1][-1]
 
+        return self._distance_matrix[-1][-1]
 
 @pytest.mark.parametrize(
     "a,b,expected_distance",
@@ -129,16 +148,17 @@ def test_levenshtein(a, b, expected_distance):
 )
 def test_edit_distance(a, b, expected_matrix):
     dm = DistanceMatrix(a, b)
-    dm.create_distance_matrix()
-    assert dm.distance_matrix == expected_matrix
+    dm.edit_distance()
+    assert dm._distance_matrix == expected_matrix
 
 
 def levenshtein(a, b):
     dm = DistanceMatrix(a, b)
-    dm.create_distance_matrix()
     return dm.edit_distance()
 
 
-dm = DistanceMatrix("tree", "hop")
-dm.create_distance_matrix()
-print(dm)
+dm = DistanceMatrix("trie", "hop")
+dm.edit_distance()
+print("Edit distance: {}".format(
+    dm._edit_distance)
+)
