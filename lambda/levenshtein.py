@@ -13,7 +13,7 @@ class DistanceMatrix:
 
         assert isinstance(self.distance_matrix, list)
 
-        header = "#"
+        header = "#  "
         for c in self.a:
             header += " {}".format(c)
 
@@ -38,14 +38,24 @@ class DistanceMatrix:
         return result
 
     def create_distance_matrix(self):
+        first_row = []
+        row = []
         rows = []
-        columns = []
+
+        # First Row
+        for i in range(len(self.a) + 1):
+            first_row.append(i)
+
+        # Zeros
         for _ in range(len(self.a)):
-            rows.append(0)
-        columns.append(rows[:])
-        for _ in range(len(self.b)):
-            columns.append(rows[:])
-        self.distance_matrix = columns
+            row.append(0)
+
+        rows.append(first_row[:])
+
+        for i in range(len(self.b)):
+            rows.append([i + 1] + row[:])
+        
+        self.distance_matrix = rows
 
     def edit_distance(self):
         # Check for empty strings
