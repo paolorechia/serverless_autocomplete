@@ -3,17 +3,17 @@ import json
 
 # Connect and retrieve on cold start
 import trie_redis
+from levenshtein import autocomplete
 
-
-blob = trie_redis.retrieve_trie()
-trie = eval(blob)
+blob = trie_redis.get_word_list()
+words = eval(blob) 
 
 # Perform only autocomplete on warm start
-def search(event, context):
 
+def levenshtein(event, context):
     input_ = event["queryStringParameters"]["input"]
 
-    suggestions = trie_redis.autocomplete_trie(trie, input_)
+    suggestions = autocomplete(words, input_, limit=5)
     body = {
             "suggestions": str(list(suggestions))
     } 
@@ -24,5 +24,3 @@ def search(event, context):
             "Access-Control-Allow-Origin": "*"
         }
     }
-    return response
-

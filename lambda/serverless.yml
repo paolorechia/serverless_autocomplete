@@ -23,7 +23,7 @@ custom:
     dockerizePip: non-linux
   customDomain:
     domainName: ${self:custom.domains.${self:custom.stage}}
-    basePath: 'autocomplete'
+    basePath: "autocomplete"
     stage: ${self:provider.stage}
     createRoute53Record: true
 
@@ -46,22 +46,34 @@ functions:
     events:
       - http:
           path: search
-          method: get 
-          reqValidatorName: 'params'
+          method: get
+          reqValidatorName: "params"
           request:
             parameters:
               querystrings:
                 input: true
           cors: true
-            
+
+  levenshtein:
+    handler: handler.levenshtein
+    events:
+      - http:
+          path: levenshtein
+          method: get
+          reqValidatorName: "params"
+          request:
+            parameters:
+              querystrings:
+                input: true
+          cors: true
 
 resources:
   Resources:
     params:
       Type: "AWS::ApiGateway::RequestValidator"
       Properties:
-        Name: 'params'
-        RestApiId: 
+        Name: "params"
+        RestApiId:
           Ref: ApiGatewayRestApi
         ValidateRequestBody: false
         ValidateRequestParameters: true

@@ -154,3 +154,10 @@ def persist_trie(trie):
 
 def retrieve_trie():
     return r.get('trie')
+
+
+def save_word_list(list_):
+    r.set('words', str(list_))
+
+def get_word_list():
+    return r.get('words')

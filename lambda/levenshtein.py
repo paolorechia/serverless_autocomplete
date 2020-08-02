@@ -88,6 +88,22 @@ class DistanceMatrix:
 
         return self._distance_matrix[-1][-1]
 
+
+def levenshtein(a, b):
+    dm = DistanceMatrix(a, b)
+    return dm.edit_distance()
+
+
+def autocomplete(word_list, input_, limit=5):
+    comparisons = []
+    for word in word_list:
+        comparisons.append((word, levenshtein(word, input_)))
+
+    comparisons.sort(key = lambda x : x[1])
+    print(comparisons)
+    return comparisons[:limit]
+
+
 @pytest.mark.parametrize(
     "a,b,expected_distance",
     [
@@ -152,13 +168,29 @@ def test_edit_distance(a, b, expected_matrix):
     assert dm._distance_matrix == expected_matrix
 
 
-def levenshtein(a, b):
-    dm = DistanceMatrix(a, b)
-    return dm.edit_distance()
+test_word_list = [
+    "assert",
+    "ball",
+    "car",
+    "cart",
+    "dart"
+    "tree",
+]
 
-
-dm = DistanceMatrix("trie", "hop")
-dm.edit_distance()
-print("Edit distance: {}".format(
-    dm._edit_distance)
+@pytest.mark.parametrize(
+    "query,limit,expected",
+    [
+        (
+            "ca", 2, 
+            [("car", 1),
+            ("cart", 2)]
+        ),
+        (
+            "bal", 1,
+            [("ball", 1)]
+        )
+    ]
 )
+def test_autocomplete(query, limit, expected):
+    suggestions = autocomplete(test_word_list, query, limit=limit)
+    assert suggestions == expected
