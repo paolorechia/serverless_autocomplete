@@ -1,7 +1,16 @@
 <template>
   <div id="app">
-    <AutocompleteInput />
-  </div>
+    <div class="container">
+      <div>
+        Trie algorithm
+        <AutocompleteInput apiUrl="https://dev-api.paolorechia.de/autocomplete/search?input=" isSorted="test"/>
+      </div>
+      <div>
+        Levenshtein edit distance (limit=20)
+        <AutocompleteInput apiUrl="https://dev-api.paolorechia.de/autocomplete/levenshtein?input="/>
+      </div>
+       </div>
+    </div>
 </template>
 
 <script>
@@ -23,4 +32,9 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+
+.container {
+  display: flex;
+}
+
 </style>

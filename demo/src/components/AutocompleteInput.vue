@@ -1,6 +1,5 @@
 <template>
   <div class="autocomplete">
-    Enter your query:
     <input v-on:focus="fetchSuggestions" v-on:keydown="fetchSuggestions" v-model="query" />
     <div class="autocomplete-suggestions" v-if="suggestions.length > 0">
         <ul>
@@ -10,6 +9,7 @@
         </ul>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -18,12 +18,14 @@ import _ from "lodash";
 
 export default {
   name: "AutocompleteInput",
+  props: ['apiUrl', 'isSorted'],
   data: function() {
     return {
       query: "",
       suggestions: [],
       api_key: window.localStorage.getItem("api-key"),
-      api_url: "https://dev-api.paolorechia.de/autocomplete/search?input="
+      api_url: this.apiUrl,
+      sort: this.isSorted
     };
   },
   methods: {
@@ -42,7 +44,12 @@ export default {
         .then(response => {
           const parsed = JSON.parse(
               response.data.suggestions.replace(/'/g, '"')
-          ).sort();
+          )
+          console.log("Sorted?", this.sort);
+          if (this.sort) {
+            console.log("Sorting...")
+            this.suggestions = parsed.sort();
+          }
           this.suggestions = parsed;
           console.log(this.suggestions);
         })
