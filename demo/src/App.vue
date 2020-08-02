@@ -7,7 +7,7 @@
       </div>
       <div>
         Levenshtein edit distance (limit=20)
-        <AutocompleteInput apiUrl="https://dev-api.paolorechia.de/autocomplete/levenshtein?input="/>
+        <AutocompleteInput apiUrl="https://dev-api.paolorechia.de/autocomplete/levenshtein?limit=20&input="/>
       </div>
        </div>
     </div>
